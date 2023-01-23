@@ -1,6 +1,9 @@
+from datetime import datetime
+
 import pandas as pd
 import plotly.express as px
 import streamlit as st
+from st_aggrid import AgGrid
 
 pd.options.plotting.backend = "plotly"
 
@@ -23,11 +26,16 @@ st.write("Data Source: [AFAD](https://deprem.afad.gov.tr)")
 @st.cache(show_spinner=False)
 def load_data():
     data = pd.read_csv("dataset.csv")
+    data["magnitude"] = data["magnitude"].round(1)
+    data["date"] = pd.to_datetime(data["date"], infer_datetime_format=True)
+    data = data[data["date"] < "2023-01-01"]
+    data["Last Quake"] = data.date.diff().map(lambda x: x.total_seconds() / 86400)
     return data
 
 
 with st.spinner("Loading Data ..."):
     data = load_data()
+
 
 st.plotly_chart(
     px.scatter_geo(
@@ -51,3 +59,37 @@ st.plotly_chart(
     use_container_width=True,
 )
 st.dataframe(data, use_container_width=True)
+
+st.header("Histograms")
+
+hist1, hist2, hist3 = st.columns(3)
+
+with hist1:
+    st.plotly_chart(
+        px.histogram(data, x="magnitude", histnorm="probability density").update_layout(
+            margin={"r": 0, "t": 0, "l": 0, "b": 0}
+        ),
+        use_container_width=True,
+    )
+
+with hist2:
+    data2 = (
+        data.groupby(data["date"].map(lambda x: x.year))["eventID"]
+        .count()
+        .reset_index(name="Count")
+    )
+    data2.date = data2.date.astype(str)
+    st.plotly_chart(
+        px.histogram(data2, x="date", y="Count")
+        .update_layout(yaxis_title="Count")
+        .update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0}),
+        use_container_width=True,
+    )
+
+with hist3:
+    st.plotly_chart(
+        px.histogram(data[data["Last Quake"] < 100], x="Last Quake").update_layout(
+            margin={"r": 0, "t": 0, "l": 0, "b": 0}
+        ),
+        use_container_width=True,
+    )
