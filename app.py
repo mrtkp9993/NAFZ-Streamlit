@@ -19,7 +19,7 @@ st.write("[LinkedIn/muratkoptur](https://www.linkedin.com/in/muratkoptur/)")
 st.markdown("---")
 
 st.header("Raw Data")
-st.write("Data Source: [SeismicPortal](http://www.seismicportal.eu)")
+st.write("Data Source: [AFAD](https://deprem.afad.gov.tr)")
 
 data_urls = [
     "https://www.seismicportal.eu/fdsnws/event/1/query?limit=4000&minlat=40.1727&maxlat=40.9139&minlon=24.9446&maxlon=30.9414&format=json&nodata=204&minmag=4",
@@ -31,16 +31,10 @@ data_urls = [
 ]
 
 
-@st.cache
+@st.cache(show_spinner=False)
 def load_data():
-    datas = []
-    for url in data_urls:
-        data = requests.get(url)
-        assert data.status_code == 200
-        data = data.json()["features"]
-        data = pd.json_normalize(data, sep="_")
-        datas.append(data)
-    return pd.concat(datas)
+    data = pd.read_csv("dataset.csv")
+    return data
 
 
 with st.spinner("Loading Data ..."):
@@ -48,16 +42,15 @@ with st.spinner("Loading Data ..."):
 
 st.plotly_chart(
     px.scatter_geo(
-        data,
-        lat="properties_lat",
-        lon="properties_lon",
-        color="properties_mag",
-        size="properties_mag",
+        data[data["magnitude"] >= 5.0],
+        lat="latitude",
+        lon="longitude",
+        color="magnitude",
+        size="magnitude",
         hover_data=[
-            "id",
-            "properties_lastupdate",
-            "properties_magtype",
-            "properties_flynn_region",
+            "location",
+            "depth",
+            "idsource",
         ],
     )
     .update_geos(
