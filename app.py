@@ -1,7 +1,5 @@
-import numpy as np
 import pandas as pd
 import plotly.express as px
-import requests
 import streamlit as st
 
 pd.options.plotting.backend = "plotly"
@@ -20,15 +18,6 @@ st.markdown("---")
 
 st.header("Raw Data")
 st.write("Data Source: [AFAD](https://deprem.afad.gov.tr)")
-
-data_urls = [
-    "https://www.seismicportal.eu/fdsnws/event/1/query?limit=4000&minlat=40.1727&maxlat=40.9139&minlon=24.9446&maxlon=30.9414&format=json&nodata=204&minmag=4",
-    "https://www.seismicportal.eu/fdsnws/event/1/query?limit=4000&minlat=39.3112&maxlat=40.5724&minlon=35.9319&maxlon=41.1301&format=json&nodata=204&minmag=4",
-    "https://www.seismicportal.eu/fdsnws/event/1/query?limit=4000&minlat=39.9273&maxlat=40.578&minlon=34.0891&maxlon=35.9319&format=json&nodata=204&minmag=4",
-    "https://www.seismicportal.eu/fdsnws/event/1/query?limit=4000&minlat=40.7325&maxlat=40.8154&minlon=30.9338&maxlon=31.5057&format=json&nodata=204&minmag=4",
-    "https://www.seismicportal.eu/fdsnws/event/1/query?limit=4000&minlat=40.617&maxlat=41.1407&minlon=31.2532&maxlon=36.6608&format=json&nodata=204&minmag=4",
-    "https://www.seismicportal.eu/fdsnws/event/1/query?limit=4000&minlat=40.5743&maxlat=40.6674&minlon=30.417&maxlon=31.2635&format=json&nodata=204&minmag=4",
-]
 
 
 @st.cache(show_spinner=False)
