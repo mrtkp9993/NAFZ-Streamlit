@@ -33,7 +33,9 @@ def load_data():
     data["date"] = pd.to_datetime(data[["year", "month", "day", "hour", "minute"]])
     data = data.sort_values("date")
     data = data[data["date"] < "2023-01-01"]
-    data["Last Quake"] = data.date.diff().map(lambda x: x.total_seconds() / 86400)
+    data["time_since_last_earthquake"] = data.date.diff().map(
+        lambda x: x.total_seconds() / 86400
+    )
     return data
 
 
@@ -85,9 +87,9 @@ with hist2:
 with hist3:
     st.plotly_chart(
         px.histogram(
-            data[data["Last Quake"] < 100],
-            x="Last Quake",
-            labels={"Last Quake": "Last Quake (Days)"},
+            data[data["time_since_last_earthquake"] < 100],
+            x="time_since_last_earthquake",
+            labels={"time_since_last_earthquake": "Time since Last Earthquake (Days)"},
         ).update_layout(
             margin={"r": 0, "t": 0, "l": 0, "b": 0},
         ),
