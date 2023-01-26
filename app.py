@@ -185,3 +185,36 @@ with st.spinner("Calculating..."):
     st.markdown(f"$a = {reg.intercept:.2f} \pm {reg.intercept_stderr:.2f}$")
     st.markdown(f"$b = {reg.slope:.2f} \pm {reg.stderr:.2f}$")
     st.markdown(f"$R^2 = {reg.rvalue**2:.2f}$")
+
+st.header("Poisson Process")
+
+with st.spinner("Calculating..."):
+    magnitudes = np.round(np.arange(4, 6.5, 0.5), 3)
+    years = [5, 10, 20, 30, 40, 50, 100]
+    prob_table = []
+    for magnitude in magnitudes:
+        risks = {}
+        data2 = (
+            data[data["magnitude"] >= magnitude].groupby("year")["magnitude"].count()
+        )
+        data2.index = pd.to_datetime(data2.index, format="%Y")
+        new_indx = pd.date_range(start="1900-01-01", end="2022-12-31", freq="YS")
+        data2 = data2.reindex(new_indx, fill_value=0)
+        lambda_mle = data2.value_counts()[1:].sum() / data2.value_counts().sum()
+        for year in years:
+            risks[f"Risk in {year} Years"] = np.round(
+                1 - np.exp(-year * lambda_mle) * (year * lambda_mle), 3
+            )
+        prob_table.append({"magnitude": magnitude, **risks})
+
+    prob_table = pd.DataFrame(prob_table)
+    prob_table.set_index("magnitude", inplace=True)
+    st.plotly_chart(
+        prob_table.T.plot()
+        .update_layout(
+            margin={"r": 0, "t": 0, "l": 0, "b": 0},
+        )
+        .update_xaxes(showgrid=False)
+        .update_yaxes(showgrid=False),
+        use_container_width=True,
+    )
