@@ -180,5 +180,6 @@ with st.spinner("Calculating..."):
     fig.update_yaxes(type="log", showgrid=False, title="normalized counts")
     fig.update_xaxes(showgrid=False, title="m")
     st.plotly_chart(fig, use_container_width=True)
-    st.markdown("$a = {:.2f} \pm {:.2f}$".format(reg.intercept, reg.intercept_stderr))
-    st.markdown("$b = {:.2f} \pm {:.2f}$".format(reg.slope, reg.stderr))
+    st.markdown(f"$a = {reg.intercept:.2f} \pm {reg.intercept_stderr:.2f}$")
+    st.markdown(f"$b = {reg.slope:.2f} \pm {reg.stderr:.2f}$")
+    st.markdown(f"$R^2 = {reg.rvalue**2:.2f}$")
